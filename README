@@ -1,0 +1,7 @@
+Just connects to freenode.net
+
+channel = channel to join
+
+password = bot password
+
+python run.py channel password
