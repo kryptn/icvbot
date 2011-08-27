@@ -18,7 +18,7 @@ def main(argv):
     search=google.getresponse()
     data=search.read()
 
-    if data.find(start)==-1: return "Google Calculator results not found."
+    if data.find(start)==-1: return "Google Calculator results not found.", None
     else:
         begin=data.index(start)
         result=data[begin+len(start):begin+data[begin:].index(end)]
