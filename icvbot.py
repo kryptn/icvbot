@@ -139,7 +139,7 @@ class icvBot(irc.IRCClient):
 		mod = cImport(command)
 		if mod:
 			result = mod.main(args)
-			log("Import success: ",command, args
+			log("Import success: ",command, args)
 			if result:
 				self.handleResponse(result)
 		else:
