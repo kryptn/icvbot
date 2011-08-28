@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys, os, random, re, time, config, MySQLdb
+from types import *
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, task
 
@@ -113,16 +114,34 @@ class icvBot(irc.IRCClient):
 		if latestThread:
 			self.msg(self.factory.channel, latestThread)
 
+	def handleResponse(self, *args):
+		args = args[0]
+		if len(args) > 1:
+			log(args[1])
+		
+		response = args[0]
+		
+		if type(response) is StringType:
+			response = [response]
+		if type(response) is ListType:
+			for rmsg in response:
+				log(rmsg)
+				self.msg(self.factory.channel, rmsg)
+
 	#import [command] if existant, runs [command].main if successful
-	#all plugins should return a string, and a log string (or None)
-	#could easily be cleaned up
+	#all plugins should return one of the following:
+	# - a string
+	# - a string, a log string
+	# - a list of strings
+	# - a list of strings, a log string
+
 	def runCommand(self, command, *args):
 		mod = cImport(command)
 		if mod:
-			result, logger = mod.main(args)
+			result = mod.main(args)
+			log("Import success: ",command, args
 			if result:
-				self.msg(self.factory.channel, result)
-			log("Import success: ",command, args, result, logger)
+				self.handleResponse(result)
 		else:
 			log("Import of %s failed" % (command))
 			return False
@@ -224,6 +243,8 @@ class icvBot(irc.IRCClient):
 					global rc
 					rc = 9
 					reactor.stop()
+				if msg == "git update":
+					os.system("git pull")
 				if msg == "test":  #testing the class plugin system that ATM doesn't like
 					self.runClass('mytest')
 			prefix = "%s: " % (user.split('!', 1)[0],)

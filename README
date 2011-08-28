@@ -1,7 +1,29 @@
 Just connects to freenode.net
 
+plugins must be structured in this way:
+
+#!/usr/bin/python
+def main(*argv):
+   <<<code>>>
+   return string
+or return string logstring
+or return [string1,string2,...]
+or return [string1,string2,...] logstring
+
+
+to run:
+
+
 channel = channel to join
+botnick = bot nickname
+password = bot password, optional
 
-password = bot password
+python run.py channel botnick [password]
 
-python run.py channel password
+
+
+
+to do:
+
+add easy-enable/disable forum checker (only I have access to the database)
+redo plugin system so it's more useful
