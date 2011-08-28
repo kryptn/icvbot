@@ -11,6 +11,6 @@ def main(*args):
       result = "%s for a total of %d" % (', '.join(map(lambda x: str(x), results)), sum(results))
       return result
    except IndexError:
-      pass
+      return None
    except ValueError:
-      pass
+      return None
