@@ -248,6 +248,10 @@ class icvBot(irc.IRCClient):
 		else: 
 			self.findUrl(msg)
 
+	def action(self, user, channel, data):
+		log("Recieved action: ",user, channel, data)
+		command, args = data.split(None, 1)
+		self.runCommand(command, args)
 
 class icvBotFactory(protocol.ClientFactory):
 	protocol = icvBot
