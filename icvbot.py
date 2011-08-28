@@ -49,7 +49,6 @@ class icvBot(irc.IRCClient):
 		self.quitPassword = None
 		self.checkTask = task.LoopingCall(self.checkForum)
 
-
 	#defines username and password to the server
 	def _get_nickname(self):
 		return self.factory.nickname
@@ -114,15 +113,11 @@ class icvBot(irc.IRCClient):
 		if latestThread:
 			self.msg(self.factory.channel, latestThread)
 
-
 	#handles plugin responses
 	def handleResponse(self, *args):
-		args = args[0]
 		if len(args) > 1:
 			log(args[1])
-		
 		response = args[0]
-		
 		if type(response) is StringType:
 			response = [response]
 		if type(response) is ListType:
@@ -174,7 +169,6 @@ class icvBot(irc.IRCClient):
 				self.runCommand('urlhandler', url)
 		else:
 			return False
-	
 
 	#called on sign on
 	#starts forum check loop, joins given channel
@@ -244,7 +238,7 @@ class icvBot(irc.IRCClient):
 					global rc
 					rc = 9
 					reactor.stop()
-				if msg == "git update":
+				if msg == "update":
 					os.system("git pull")
 				if msg == "test":  #testing the class plugin system that ATM doesn't like
 					self.runClass('mytest')
