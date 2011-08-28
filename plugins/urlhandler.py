@@ -27,7 +27,10 @@ def main(arg):
       doc = f.read()
       f.close()
       soup = BeautifulSoup(doc)
-      title = "Title: "+' '.join(str(soup.html.head.title.string).split())
+      try:
+         title = "Title: "+' '.join(str(soup.html.head.title.string).split())
+      except exceptions.AttributeError:
+         title = None
    except urllib2.URLError:
       title = None
    return title, title
