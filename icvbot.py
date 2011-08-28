@@ -114,6 +114,8 @@ class icvBot(irc.IRCClient):
 		if latestThread:
 			self.msg(self.factory.channel, latestThread)
 
+
+	#handles plugin responses
 	def handleResponse(self, *args):
 		args = args[0]
 		if len(args) > 1:
@@ -134,7 +136,6 @@ class icvBot(irc.IRCClient):
 	# - a string, a log string
 	# - a list of strings
 	# - a list of strings, a log string
-
 	def runCommand(self, command, *args):
 		mod = cImport(command)
 		if mod:

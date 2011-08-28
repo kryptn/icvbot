@@ -18,9 +18,9 @@ def main(argv):
     search=google.getresponse()
     data=search.read()
 
-    if data.find(start)==-1: return "Google Calculator results not found.", None
+    if data.find(start)==-1: return "Google Calculator results not found."
     else:
         begin=data.index(start)
         result=data[begin+len(start):begin+data[begin:].index(end)]
         result = result.replace("<font size=-2> </font>",",").replace(" &#215; 10<sup>","E").replace("</sup>","").replace("\xa0",",")
-        return result, None
+        return result

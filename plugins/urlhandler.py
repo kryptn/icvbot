@@ -21,7 +21,7 @@ def main(arg):
    if yt and random.random() < 0.25:
       title = getYoutubeComment(yt[0][1])
       if title:
-         return title, None
+         return title
    try:
       f = urllib2.urlopen(arg[0])
       doc = f.read()
@@ -33,4 +33,4 @@ def main(arg):
          title = None
    except urllib2.URLError:
       title = None
-   return title, title
+   return title

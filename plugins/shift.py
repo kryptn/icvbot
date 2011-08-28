@@ -7,7 +7,8 @@ def shift(phrase, s):
          phrase[x] = f(phrase[x], s, 65)
    return ''.join(phrase)
 
-def f(c, s, n): return chr((ord(c)-n+s)%26+n)
+def f(c, s, n): 
+   return chr((ord(c)-n+s)%26+n)
 
 def main(args):
-   return shift(''.join(map(lambda x: x+" ", args[1:])), int(args[0])), None
+   return shift(' '.join(args[1:])), int(args[0]))
