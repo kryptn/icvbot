@@ -29,7 +29,6 @@ def main(arg):
       f.close()
       soup = BeautifulSoup(doc)
       try:
-         title = 
          title = "Title: "+unescape(' '.join(str(soup.head.title.string).split()))
       except AttributeError:
          title = None
