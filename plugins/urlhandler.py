@@ -1,4 +1,5 @@
 import urllib2, random, xml.dom.minidom, re
+from xml.sax.saxutils import unescape
 from BeautifulSoup import BeautifulSoup
 
 def getYoutubeComment(vidid):
@@ -28,8 +29,9 @@ def main(arg):
       f.close()
       soup = BeautifulSoup(doc)
       try:
-         title = "Title: "+' '.join(str(soup.html.head.title.string).split())
-      except exceptions.AttributeError:
+         title = 
+         title = "Title: "+unescape(' '.join(str(soup.head.title.string).split()))
+      except AttributeError:
          title = None
    except urllib2.URLError:
       title = None
