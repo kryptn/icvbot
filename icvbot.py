@@ -278,7 +278,7 @@ if __name__ == "__main__":
 		chan = sys.argv[1]
 		nick = sys.argv[2]
 	except IndexError:
-		print "error.  'python bot.py channel nickname <password>"
+		sys.exit( "usage: python bot.py channel nickname <password>" )
 	try: passwd = sys.argv[3]
 	except IndexError:
 		passwd = None
