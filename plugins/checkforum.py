@@ -1,4 +1,4 @@
-import MySQLdb
+import MySQLdb, config
 
 def query(q):
    """mysql query"""

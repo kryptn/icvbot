@@ -1,5 +1,0 @@
-
-host=""
-user=""
-pword=""
-db=""
