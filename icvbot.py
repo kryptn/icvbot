@@ -10,8 +10,8 @@ master = "kryptn!~kaphene@li216-42.members.linode.com"
 wordlist = "wordlist.txt"
 rc = 0
 
-# import plugins.  reloads module if already imported
 def cImport(name):
+	"""import plugins.  reloads module if already imported"""
 	name = "%s.%s" % (pluginsFolder, name)
 	try:
 		mod = sys.modules[name]
@@ -24,10 +24,14 @@ def cImport(name):
 		return sys.modules[name]
 	except ImportError: return None
 
-#mysql query
-def query(q):
-	conn = MySQLdb.connect(host=config.host,user=config.user,
-									passwd=config.pword,db=config.db)
+def query( q ):
+	"""mysql query"""
+	conn = MySQLdb.connect(
+		host   = config.host,
+		user   = config.user, 
+		passwd = config.pword,
+		db     = config.db
+	)
 	cursor = conn.cursor()
 	cursor.execute(q)
 	result = cursor.fetchall()
@@ -35,8 +39,8 @@ def query(q):
 	conn.close()
 	return result
 
-#logs to file and prints to console
 def log(*args):
+	"""logs to file and prints to console"""
 	s = ''.join(map(lambda x: str(x)+" ", args))
 	t = time.strftime("%Y %m %d %H %M %S ", time.gmtime())+s
 	f = open('botlog.txt', 'a')
@@ -49,26 +53,29 @@ class icvBot(irc.IRCClient):
 		self.quitPassword = None
 		self.checkTask = task.LoopingCall(self.checkForum)
 
-	#defines username and password to the server
 	def _get_nickname(self):
+		"""define username"""
 		return self.factory.nickname
+
 	nickname = property(_get_nickname)
 
 	def _get_password(self):
+		"""define password"""
 		return self.factory.password
+
 	password = property(_get_password)
 
-	#starts the task loop to query the ICV database for updates
 	def startForumCheckLoop(self, t=60.0):
+		"""starts the task loop to query the ICV database for updates"""
 		log("Started forum check loop")
 		self.checkTask.start(t)
 	
-	#stops task loop
 	def stopForumCheckLoop(self):
+		"""stops task loop"""
 		self.checkTask.stop()
 
-	#checks log file against current latest record
 	def checkFile(self, loc, q):
+		"""checks log file against current latest record"""
 		result = query(q)[0]
 		try:
 			f = open(loc, 'r')
@@ -86,25 +93,42 @@ class icvBot(irc.IRCClient):
 			return result
 		return False
 
-	#queries database for the highest ID post and thread, returns message to send to channel (if any)
 	def getLatestId(self):
-		q = "select icv_posts.id, icv_posts.threadid, icv_posts.author, icv_threads.title from icv_posts inner join icv_threads on icv_posts.threadid=icv_threads.id order by id desc limit 1"
+		"""
+		queries database for the highest ID post and thread
+		returns message to send to channel (if any)
+		"""
+
+		q = """
+			SELECT icv_posts.id, icv_posts.threadid,
+			icv_posts.author, icv_threads.title 
+			FROM icv_posts 
+			INNER JOIN icv_threads 
+			ON icv_posts.threadid=icv_threads.id 
+			ORDER BY id DESC LIMIT 1
+		"""
+
 		r = self.checkFile('lid.txt', q)
 		if r:
 			return "%s posted in '%s': http://icodeviruses.com/forum.virus?seed=%s" % (r[2], r[3], str(r[1]))
 		else:
-			False
+			return False
 
 	def getLatestThread(self):
-		q = "select id, author, title from icv_threads order by id desc limit 1"
+		q = """
+			SELECT id, author, title 
+			FROM icv_threads 
+			ORDER BY id DESC LIMIT 1
+		"""
+
 		r = self.checkFile('lt.txt', q)
 		if r:
 			return "%s made a new thread named '%s': http://icodeviruses.com/forum.virus?seed=%s" % (r[1], r[2],str(r[0]))
 		else:
-			False
+			return False
 
-	# runs the above
 	def checkForum(self):
+		""" Check forum for updates. Run getLatestId and getLatestThread"""
 		log("Checking Forum")
 		latestId = self.getLatestId()
 		latestThread = self.getLatestThread()
@@ -113,8 +137,8 @@ class icvBot(irc.IRCClient):
 		if latestThread:
 			self.msg(self.factory.channel, latestThread)
 
-	#handles plugin responses
 	def handleResponse(self, *args):
+		"""handle plugin responses"""
 		if len(args) > 1:
 			log(args[1])
 		response = args[0]
@@ -125,13 +149,15 @@ class icvBot(irc.IRCClient):
 				log(rmsg)
 				self.msg(self.factory.channel, rmsg)
 
-	#import [command] if existant, runs [command].main if successful
-	#all plugins should return one of the following:
-	# - a string
-	# - a string, a log string
-	# - a list of strings
-	# - a list of strings, a log string
 	def runCommand(self, command, *args):
+		"""
+		import [command] if existant, runs [command].main if successful
+		all plugins should return one of the following:
+		 * a string
+		 * a string, a log string
+		 * a list of strings
+		 * a list of strings, a log string
+		"""
 		mod = cImport(command)
 		if mod:
 			result = mod.main(args)
@@ -142,8 +168,11 @@ class icvBot(irc.IRCClient):
 			log("Import of %s failed" % (command))
 			return False
 
-	#testing a more inclusive plugin system, still doesn't work (and ATM says it's a bad idea)
 	def runClass(self, command, *args):
+		"""
+		testing a more inclusive plugin system, 
+		still doesn't work (and ATM says it's a bad idea)
+		"""
 		mod = cImport(command)
 		if mod:
 			c = mod.m()
@@ -152,8 +181,8 @@ class icvBot(irc.IRCClient):
 			log("Import of %s failed" % (command))
 			return False
 	
-	#assigns a password for admin bot control
 	def assignKillPassword(self):
+		"""assigns a password for admin bot control"""
 		if wordlist:
 			f = open(wordlist, 'r')
 			self.quitPassword = random.choice(f.read().split())
@@ -161,8 +190,11 @@ class icvBot(irc.IRCClient):
 			log("Set quit password: %s" % (self.quitPassword))
 			self.msg(master, "Quit password: %s" % (self.quitPassword))
 	
-	#finds a URL in a string.  if it does it runs urlhandler
 	def findUrl(self, msg):
+		"""
+		Attempt to find a URL in a string.
+		Run urlhandler on success
+		"""
 		urls = re.findall(r'(https?://\S+)', msg)
 		if urls:
 			for url in urls:
@@ -170,18 +202,22 @@ class icvBot(irc.IRCClient):
 		else:
 			return False
 
-	#called on sign on
-	#starts forum check loop, joins given channel
-	#i'm sure multi-channel is possible, but i haven't bothered to try
 	def signedOn(self):
+		"""	
+		called on sign on
+		Starts forum check loop, joins given channel
+		I'm sure multi-channel is possible, but i haven't bothered to try
+		"""
 		self.startForumCheckLoop()
-#		self.assignKillPassword()
+		#self.assignKillPassword()
 		self.join(self.factory.channel)
 		log("Signed on as %s." % (self.factory.nickname,))
 
-	#called when kicked from channel
-	#50% chance of revenge kicking when rejoining
 	def kickedFrom(self, channel, kicker, message):
+		"""
+		called when kicked from channel
+		50% chance of revenge kicking when rejoining
+		"""
 		log("Kicked by %s: %s" % (kicker, message))
 		self.join(self.factory.channel)
 		if random.random() < 0.5:
@@ -190,27 +226,33 @@ class icvBot(irc.IRCClient):
 			log("Queue'd kick of %s" % (kicker))
 		log("Rejoined")
 
-	#called when a user is kicked
-	#25% chance of replying "Oh shit!"
-	#easily expandable
 	def userKicked(self, kickee, channel, kicker, message):
+		"""
+		called when a user is kicked
+		25% chance of replying "Oh shit!"
+		easily expandable
+		"""
 		if random.random() < 0.25:
 			self.msg(self.factory.channel, "Oh shit!")
 			log("%s was kicked from %s and I replied" % (kickee, channel))
 
-	#called when finished joining a channel
 	def joined(self, channel):
+		"""called when finished joining a channel"""
 		log("Joined %s." % (channel,))
 
-	#called when a user leaves the channel
-	#2% chance
 	def userLeft(self, user, channel):
+		"""
+		called when a user leaves the channel
+		2% chance
+		"""
 		if random.random() < 0.02:
 			self.msg(self.factory.channel, "But, I love you! :(")
 	
-	#called when the topic updates (and unfortunately when the bot joins the channel)
-	#needs cleaning up
 	def topicUpdated(self, user, channel, newTopic):
+		"""
+		called when the topic updates (and unfortunately when the bot joins the channel)
+		needs cleaning up
+		"""
 		f = open('topic.txt', 'a')
 		t = time.strftime("%Y.%m.%d %H:%M:%S ", time.gmtime())
 		f.write(t+"%s changed the topic in %s: %s \n" % (user, channel, newTopic))
@@ -218,14 +260,16 @@ class icvBot(irc.IRCClient):
 		if webdir: os.system("cp topic.txt "+webdir)
 		log("Updated topic log")
 
-	#called on message recieved from channel or PM
-	#ignored from non-users, and when it doesn't start with the bot name
-	#first parses for admin commands (needs to be expanded)
-	#then parses for the first word after the bots name and tries to import and run that command
-	#example: SirVirii: plugin-name some arguments
-	#         |ignored |command    |args
-	#if none of the above, parse the message for a url
 	def privmsg(self, user, channel, msg):
+		"""
+		called on message recieved from channel or PM
+		ignored from non-users, and when it doesn't start with the bot name
+		first parses for admin commands (needs to be expanded)
+		then parses for the first word after the bots name and tries to import and run that command
+		example: SirVirii: plugin-name some arguments
+		         |ignored |command    |args
+		if none of the above, parse the message for a url
+		"""
 		if not user:
 			return
 		log("Recieved message: ",user, channel, msg)
@@ -256,33 +300,35 @@ class icvBot(irc.IRCClient):
 class icvBotFactory(protocol.ClientFactory):
 	protocol = icvBot
 
-	#uses protocol to 
 	def __init__(self, channel, nickname='SirVirii', password=None):
+		"""uses protocol to"""
 		self.channel = channel
 		self.nickname = nickname
 		self.password = password
 	
-	#called on disconnect, attempts to reconnect
 	def clientConnectionLost(self, connector, reason):
+		"""called on disconnect, attempts to reconnect"""
 		log("Lost connection (%s), reconnecting." % (reason,))
 		connector.connect()
 
-	#called on failed connection.  Obvious.
 	def clientConnectionFailed(self, connector, reason):
+		"""called on failed connection.  Obvious."""
 		log("Could not connect: %s" % (reason,))
 
 
-#runs bot
+"""This next area parses cli and runs the bot!"""
+
 if __name__ == "__main__":
 	try:
 		chan = sys.argv[1]
 		nick = sys.argv[2]
+        	if not chan.startswith( '#' ): chan = '#' + chan
 	except IndexError:
 		sys.exit( "usage: python bot.py channel nickname <password>" )
 	try: passwd = sys.argv[3]
 	except IndexError:
 		passwd = None
-	reactor.connectTCP('irc.freenode.net', 6667, icvBotFactory("#"+chan,nick,passwd))
+	reactor.connectTCP('irc.freenode.net', 6667, icvBotFactory(chan,nick,passwd))
 	reactor.run()
 	print rc
 	sys.exit(rc)
