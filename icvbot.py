@@ -216,7 +216,7 @@ class icvBot(irc.IRCClient):
 
 	def action(self, user, channel, data):
 		log("Recieved action: ",user, channel, data)
-		command, args = msg.split(' ')[0], msg.split(' ')[1:]
+		command, args = data.split(' ')[0], data.split(' ')[1:]
 		self.runCommand(command, args)
 
 class icvBotFactory(protocol.ClientFactory):
