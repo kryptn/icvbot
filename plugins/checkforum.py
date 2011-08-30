@@ -1,6 +1,6 @@
 import MySQLdb
 
-def query( q ):
+def query(q):
    """mysql query"""
    conn = MySQLdb.connect(
       host   = config.host,
@@ -15,7 +15,7 @@ def query( q ):
    conn.close()
    return result
 
-def checkFile(, loc, q):
+def checkFile(loc, q):
    """checks log file against current latest record"""
    result = query(q)[0]
    try:
