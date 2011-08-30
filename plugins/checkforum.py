@@ -70,7 +70,6 @@ def getLatestThread():
 
 def main(*args):
    """ Check forum for updates. Run getLatestId and getLatestThread"""
-   log("Checking Forum")
    latestId = getLatestId()
    latestThread = getLatestThread()
    result = []
@@ -78,4 +77,4 @@ def main(*args):
       result.append(latestId)
    if latestThread:
       result.appendlatestThread)
-   return result
+   return result, "Checked Forum"
