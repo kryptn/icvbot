@@ -24,21 +24,6 @@ def cImport(name):
 		return sys.modules[name]
 	except ImportError: return None
 
-def query( q ):
-	"""mysql query"""
-	conn = MySQLdb.connect(
-		host   = config.host,
-		user   = config.user, 
-		passwd = config.pword,
-		db     = config.db
-	)
-	cursor = conn.cursor()
-	cursor.execute(q)
-	result = cursor.fetchall()
-	cursor.close()
-	conn.close()
-	return result
-
 def log(*args):
 	"""logs to file and prints to console"""
 	s = ''.join(map(lambda x: str(x)+" ", args))
@@ -51,7 +36,7 @@ def log(*args):
 class icvBot(irc.IRCClient):
 	def __init__(self):
 		self.quitPassword = None
-		self.checkTask = task.LoopingCall(self.checkForum)
+		self.checkTask = task.LoopingCall(self.runCommand, 'checkforum')
 
 	def _get_nickname(self):
 		"""define username"""
@@ -73,69 +58,6 @@ class icvBot(irc.IRCClient):
 	def stopForumCheckLoop(self):
 		"""stops task loop"""
 		self.checkTask.stop()
-
-	def checkFile(self, loc, q):
-		"""checks log file against current latest record"""
-		result = query(q)[0]
-		try:
-			f = open(loc, 'r')
-			record = f.read()
-			f.close()
-		except IOError:
-			f = open(loc, 'w')
-			f.write("0")
-			f.close()
-			record = "0"
-		if result[0] > int(record):
-			f = open(loc, 'w')
-			f.write(str(result[0]))
-			f.close()
-			return result
-		return False
-
-	def getLatestId(self):
-		"""
-		queries database for the highest ID post and thread
-		returns message to send to channel (if any)
-		"""
-
-		q = """
-			SELECT icv_posts.id, icv_posts.threadid,
-			icv_posts.author, icv_threads.title 
-			FROM icv_posts 
-			INNER JOIN icv_threads 
-			ON icv_posts.threadid=icv_threads.id 
-			ORDER BY id DESC LIMIT 1
-		"""
-
-		r = self.checkFile('lid.txt', q)
-		if r:
-			return "%s posted in '%s': http://icodeviruses.com/forum.virus?seed=%s" % (r[2], r[3], str(r[1]))
-		else:
-			return False
-
-	def getLatestThread(self):
-		q = """
-			SELECT id, author, title 
-			FROM icv_threads 
-			ORDER BY id DESC LIMIT 1
-		"""
-
-		r = self.checkFile('lt.txt', q)
-		if r:
-			return "%s made a new thread named '%s': http://icodeviruses.com/forum.virus?seed=%s" % (r[1], r[2],str(r[0]))
-		else:
-			return False
-
-	def checkForum(self):
-		""" Check forum for updates. Run getLatestId and getLatestThread"""
-		log("Checking Forum")
-		latestId = self.getLatestId()
-		latestThread = self.getLatestThread()
-		if latestId:
-			self.msg(self.factory.channel, latestId)
-		if latestThread:
-			self.msg(self.factory.channel, latestThread)
 
 	def handleResponse(self, *args):
 		"""handle plugin responses"""
