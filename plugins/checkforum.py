@@ -76,5 +76,5 @@ def main(*args):
    if latestId:
       result.append(latestId)
    if latestThread:
-      result.appendlatestThread)
+      result.append(latestThread)
    return result, "Checked Forum"
