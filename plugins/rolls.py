@@ -17,9 +17,9 @@ def main( *args ):
    except( ValueError, IndexError ):
       return "usage example: /me rolls 2d6"
 
-   if quant > 10 or quant < 1:
+   if quant > 100 or quant < 1:
       return "You must roll between 1 and 10 dice, /me rolls 2d6"
-   if dmax > 100:
+   if dmax > 1000:
       return "Dice cannot have more than 100 sides!"
 
    return roll( quant, dmax )
