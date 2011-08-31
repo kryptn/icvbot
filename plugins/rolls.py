@@ -5,14 +5,15 @@ def roll( quant, dmax ):
    """Roll the dice and return results"""
    rolls = []
    for x in xrange( quant ):
-      rolls.append( random.randint( 1, dmax ) )
+      rolls.append( randint( 1, dmax ) )
 
    result = "%s for a total of %d" % (', '.join( map(lambda x: str(x), rolls) ), sum(rolls) )
    return result
 
 def main( *args ):
    try:
-      quant, dmax = args[0][0].split( 'd' )
+      print args
+      quant, dmax = args[0][0][0].split( 'd' )
       quant, dmax = int(quant), int(dmax)
    except( ValueError, IndexError ):
       return "usage example: /me rolls 2d6"
