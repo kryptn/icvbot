@@ -28,7 +28,7 @@ def getYoutubeComment(vidid):
 
 def main(arg):
    yt = re.findall(r"\b(?P<url>http://[\w\.]*youtube\.com/[\w\?&]*v=(?P<vidid>[\w-]*))", arg[0])
-   tw = re.findall(r"\bhttp[s?]://[\w\.]*twitter.com/#!/[\w]*/status/(?P<id>[\d]*)", arg[0])
+   tw = re.findall(r"\bhttp[s]?://[\w\.]*twitter.com/#!/[\w]*/status/(?P<id>[\d]*)", arg[0])
    if yt and random.random() < 0.25:
       title = getYoutubeComment(yt[0][1])
       if title:
