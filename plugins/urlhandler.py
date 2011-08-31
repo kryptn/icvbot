@@ -48,4 +48,4 @@ def main(arg):
          title = None
    except urllib2.URLError:
       title = None
-   return Title
+   return title
