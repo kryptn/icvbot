@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, os, random, re, time, config, MySQLdb
+import sys, os, random, re, time, MySQLdb
 from types import *
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, task
