@@ -1,3 +1,3 @@
-def main(args):
-   args = ' '.join(args[0])
+def main(l,args):
+   args = ' '.join(args)
    return args

@@ -6,8 +6,8 @@
 
 import urllib, httplib, sys
 
-def main(argv):
-    argv = ' '.join(argv[0])
+def main(l, argv):
+    argv = ' '.join(argv)
     query=urllib.urlencode({'q':argv})
 
     start='<h2 class=r style="font-size:138%"><b>'

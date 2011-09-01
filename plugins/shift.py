@@ -1,4 +1,4 @@
-def shift(phrase, s):
+def shift(s, phrase):
    phrase = list(phrase)
    for x in xrange(len(phrase)):
       if ord(phrase[x]) >= 97 and ord(phrase[x]) <= 122:
@@ -7,8 +7,9 @@ def shift(phrase, s):
          phrase[x] = f(phrase[x], s, 65)
    return ''.join(phrase)
 
-def f(c, s, n): 
+def f(c, s, n):
    return chr((ord(c)-n+s)%26+n)
 
-def main(args):
-   return shift(' '.join(args[1:])), int(args[0]))
+def main(l, args):
+   print args
+   return shift(int(args[0]), ' '.join(args[1:]))

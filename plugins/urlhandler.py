@@ -7,7 +7,7 @@ def getTwitterCrawl(statusId):
    nextid, stream = statusId, list()
    while nextid:
       status = api.GetStatus(nextid)
-      stream.append(str(status.user.screen_name +": "+ status.text))
+      stream.append(status.user.screen_name.encode('ascii', 'ignore') +": "+ status.text.encode('ascii','ignore'))
       nextid = status.in_reply_to_status_id
    return stream[::-1]
    
@@ -26,7 +26,7 @@ def getYoutubeComment(vidid):
       return ' '.join(str(comment).split())
    return None
 
-def main(arg):
+def main(l, arg):
    yt = re.findall(r"\b(?P<url>http://[\w\.]*youtube\.com/[\w\?&]*v=(?P<vidid>[\w-]*))", arg[0])
    tw = re.findall(r"\bhttp[s]?://[\w\.]*twitter.com/#!/[\w]*/status/(?P<id>[\d]*)", arg[0])
    if yt and random.random() < 0.25:

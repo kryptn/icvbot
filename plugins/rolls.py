@@ -10,10 +10,10 @@ def roll( quant, dmax ):
    result = "%s for a total of %d" % (', '.join( map(lambda x: str(x), rolls) ), sum(rolls) )
    return result
 
-def main( *args ):
+def main(l, args):
    try:
       print args
-      quant, dmax = args[0][0][0].split( 'd' )
+      quant, dmax = args[0].split( 'd' )
       quant, dmax = int(quant), int(dmax)
    except( ValueError, IndexError ):
       return "usage example: /me rolls 2d6"

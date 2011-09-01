@@ -68,7 +68,7 @@ def getLatestThread():
    else:
       return False
 
-def main(*args):
+def main(l, args):
    """ Check forum for updates. Run getLatestId and getLatestThread"""
    latestId = getLatestId()
    latestThread = getLatestThread()
