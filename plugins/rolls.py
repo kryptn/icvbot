@@ -19,8 +19,8 @@ def main( *args ):
       return "usage example: /me rolls 2d6"
 
    if quant > 100 or quant < 1:
-      return "You must roll between 1 and 10 dice, /me rolls 2d6"
+      return "You must roll between 1 and 100 dice, /me rolls 2d6"
    if dmax > 1000:
-      return "Dice cannot have more than 100 sides!"
+      return "Dice cannot have more than 1000 sides!"
 
    return roll( quant, dmax )
