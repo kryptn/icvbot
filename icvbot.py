@@ -4,6 +4,7 @@ from types import *
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, task
 
+sys.path.append(os.getcwd())
 pluginsFolder = "plugins"
 webdir = "/home/kryptn/www/public_html/"
 master = "kryptn!~kaphene@li216-42.members.linode.com"
