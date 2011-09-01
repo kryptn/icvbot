@@ -4,7 +4,6 @@ from types import *
 from twisted.words.protocols import irc
 from twisted.internet import protocol, reactor, task
 
-sys.path.append(os.getcwd())
 pluginsFolder = "plugins"
 webdir = "/home/kryptn/www/public_html/"
 master = "kryptn!~kaphene@li216-42.members.linode.com"
@@ -37,7 +36,7 @@ def log(*args):
 class icvBot(irc.IRCClient):
 	def __init__(self):
 		self.quitPassword = None
-		self.checkTask = task.LoopingCall(self.runCommand, 'checkforum')
+		self.checkTask = task.LoopingCall(self.runCommand, None, 'checkforum')
 
 	def _get_nickname(self):
 		"""define username"""
@@ -72,7 +71,7 @@ class icvBot(irc.IRCClient):
 				log(rmsg)
 				self.msg(self.factory.channel, rmsg)
 
-	def runCommand(self, command, *args):
+	def oldrunCommand(self, command, *args):
 		"""
 		import [command] if existant, runs [command].main if successful
 		all plugins should return one of the following:
@@ -92,6 +91,24 @@ class icvBot(irc.IRCClient):
 			log("Import of %s failed" % (command))
 			return False
 	
+	def runCommand(self, local=None, msg=None):
+		if not msg:
+			msg = local['msg']
+		command, args = msg.split()[0], msg.split()[1:]
+		print locals()
+
+		mod = cImport(command)
+		if mod:
+			result = mod.main(local, args)
+			log("Import Success: ", command, args, result)
+			if result:
+				self.handleResponse(result)
+				return True
+		else:
+			log("Import of %s failed" % (command))
+			return False
+		
+	
 	def assignKillPassword(self):
 		"""assigns a password for admin bot control"""
 		if wordlist:
@@ -109,7 +126,7 @@ class icvBot(irc.IRCClient):
 		urls = re.findall(r'(https?://\S+)', msg)
 		if urls:
 			for url in urls:
-				self.runCommand('urlhandler', url)
+				self.runCommand(None, "urlhandler "+url)
 		else:
 			return False
 
@@ -197,13 +214,10 @@ class icvBot(irc.IRCClient):
 					reactor.stop()
 				if msg == "update":
 					os.system("git pull")
-				if msg == "test":  #testing the class plugin system that ATM doesn't like
-					self.runCommand('mytest', locals())
-			prefix = "%s: " % (user.split('!', 1)[0],)
-			command, args = msg.split(' ')[0], msg.split(' ')[1:]
-			result = self.runCommand(command, args)
+			
+			result = self.runCommand(locals())
 			if not result and msg[-1] == "?":
-				self.runCommand("shakes", ['8 ball'])
+				self.runCommand(None, "shakes 8 ball")
 		else: 
 			self.findUrl(msg)
 
