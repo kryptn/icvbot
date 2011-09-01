@@ -86,6 +86,7 @@ class icvBot(irc.IRCClient):
 			log("Import success: ",command, args, result)
 			if result:
 				self.handleResponse(result)
+				return True
 		else:
 			log("Import of %s failed" % (command))
 			return False
@@ -188,6 +189,8 @@ class icvBot(irc.IRCClient):
 		ignored from non-users, and when it doesn't start with the bot name
 		first parses for admin commands (needs to be expanded)
 		then parses for the first word after the bots name and tries to import and run that command
+		if the command import fails, it checks if the message is a question.
+		if so, this will run the 8ball script (rolls.py)
 		example: SirVirii: plugin-name some arguments
 		         |ignored |command    |args
 		if none of the above, parse the message for a url
@@ -210,7 +213,9 @@ class icvBot(irc.IRCClient):
 					self.runClass('mytest')
 			prefix = "%s: " % (user.split('!', 1)[0],)
 			command, args = msg.split(' ')[0], msg.split(' ')[1:]
-			self.runCommand(command, args)
+			result = self.runCommand(command, args)
+			if not result and msg[-1] == "?":
+				self.runCommand("shakes", ['8 ball'])
 		else: 
 			self.findUrl(msg)
 
