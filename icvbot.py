@@ -90,19 +90,6 @@ class icvBot(irc.IRCClient):
 		else:
 			log("Import of %s failed" % (command))
 			return False
-
-	def runClass(self, command, *args):
-		"""
-		testing a more inclusive plugin system, 
-		still doesn't work (and ATM says it's a bad idea)
-		"""
-		mod = cImport(command)
-		if mod:
-			c = mod.m()
-			c.main()
-		else:
-			log("Import of %s failed" % (command))
-			return False
 	
 	def assignKillPassword(self):
 		"""assigns a password for admin bot control"""
