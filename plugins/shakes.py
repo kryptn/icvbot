@@ -33,3 +33,6 @@ def main( *args ):
 
     if '8' in command and 'ball' in command:
         return eightball()
+
+if __name__ == '__main__':
+    print eightball()
