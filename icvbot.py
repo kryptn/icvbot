@@ -190,7 +190,7 @@ class icvBot(irc.IRCClient):
 		first parses for admin commands (needs to be expanded)
 		then parses for the first word after the bots name and tries to import and run that command
 		if the command import fails, it checks if the message is a question.
-		if so, this will run the 8ball script (rolls.py)
+		if so, this will run the 8ball script (shakes.py)
 		example: SirVirii: plugin-name some arguments
 		         |ignored |command    |args
 		if none of the above, parse the message for a url
@@ -210,7 +210,7 @@ class icvBot(irc.IRCClient):
 				if msg == "update":
 					os.system("git pull")
 				if msg == "test":  #testing the class plugin system that ATM doesn't like
-					self.runClass('mytest')
+					self.runCommand('mytest', locals())
 			prefix = "%s: " % (user.split('!', 1)[0],)
 			command, args = msg.split(' ')[0], msg.split(' ')[1:]
 			result = self.runCommand(command, args)
