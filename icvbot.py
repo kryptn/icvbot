@@ -36,7 +36,7 @@ def log(*args):
 class icvBot(irc.IRCClient):
 	def __init__(self):
 		self.quitPassword = None
-		self.checkTask = task.LoopingCall(self.runCommand, 'checkforum')
+		self.checkTask = task.LoopingCall(self.runCommand, None, 'checkforum')
 
 	def _get_nickname(self):
 		"""define username"""
@@ -71,7 +71,7 @@ class icvBot(irc.IRCClient):
 				log(rmsg)
 				self.msg(self.factory.channel, rmsg)
 
-	def runCommand(self, command, *args):
+	def oldrunCommand(self, command, *args):
 		"""
 		import [command] if existant, runs [command].main if successful
 		all plugins should return one of the following:
@@ -90,19 +90,24 @@ class icvBot(irc.IRCClient):
 		else:
 			log("Import of %s failed" % (command))
 			return False
+	
+	def runCommand(self, local=None, msg=None):
+		if not msg:
+			msg = local['msg']
+		command, args = msg.split()[0], msg.split()[1:]
+		print locals()
 
-	def runClass(self, command, *args):
-		"""
-		testing a more inclusive plugin system, 
-		still doesn't work (and ATM says it's a bad idea)
-		"""
 		mod = cImport(command)
 		if mod:
-			c = mod.m()
-			c.main()
+			result = mod.main(local, args)
+			log("Import Success: ", command, args, result)
+			if result:
+				self.handleResponse(result)
+				return True
 		else:
 			log("Import of %s failed" % (command))
 			return False
+		
 	
 	def assignKillPassword(self):
 		"""assigns a password for admin bot control"""
@@ -121,7 +126,7 @@ class icvBot(irc.IRCClient):
 		urls = re.findall(r'(https?://\S+)', msg)
 		if urls:
 			for url in urls:
-				self.runCommand('urlhandler', url)
+				self.runCommand(None, "urlhandler "+url)
 		else:
 			return False
 
@@ -190,7 +195,7 @@ class icvBot(irc.IRCClient):
 		first parses for admin commands (needs to be expanded)
 		then parses for the first word after the bots name and tries to import and run that command
 		if the command import fails, it checks if the message is a question.
-		if so, this will run the 8ball script (rolls.py)
+		if so, this will run the 8ball script (shakes.py)
 		example: SirVirii: plugin-name some arguments
 		         |ignored |command    |args
 		if none of the above, parse the message for a url
@@ -209,20 +214,17 @@ class icvBot(irc.IRCClient):
 					reactor.stop()
 				if msg == "update":
 					os.system("git pull")
-				if msg == "test":  #testing the class plugin system that ATM doesn't like
-					self.runClass('mytest')
-			prefix = "%s: " % (user.split('!', 1)[0],)
-			command, args = msg.split(' ')[0], msg.split(' ')[1:]
-			result = self.runCommand(command, args)
+			
+			result = self.runCommand(locals())
 			if not result and msg[-1] == "?":
-				self.runCommand("shakes", ['8 ball'])
+				self.runCommand(None, "shakes 8 ball")
 		else: 
 			self.findUrl(msg)
 
 	def action(self, user, channel, data):
 		log("Recieved action: ",user, channel, data)
-		command, args = data.split(' ')[0], data.split(' ')[1:]
-		self.runCommand(command, args)
+		msg = data
+		self.runCommand(locals())
 
 class icvBotFactory(protocol.ClientFactory):
 	protocol = icvBot

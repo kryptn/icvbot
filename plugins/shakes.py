@@ -25,9 +25,9 @@ Very doubtful""".split('\n')
 def eightball():
     return choice( phrases )
 
-def main( *args ):
+def main(l, args):
     try:
-        command = ''.join( args[0][0] )
+        command = ''.join(args)
     except( ValueError, IndexError ):
         return False
 
