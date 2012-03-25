@@ -1,0 +1,11 @@
+# extensions to ignore
+#==========================
+
+*.egg-info
+*.pyc
+
+# files to ignore
+#=========================
+ 
+botlog.txt
+topic.txt
