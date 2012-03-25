@@ -1,29 +1,40 @@
-Just connects to freenode.net
+Install dependencies
+=============================
 
-plugins must be structured in this way:
+We suggest running in a virtualenv::
 
-#!/usr/bin/python
-def main(*argv):
-   <<<code>>>
-   return string
-or return string logstring
-or return [string1,string2,...]
-or return [string1,string2,...] logstring
+  python setup.py develop 
 
 
-to run:
+How to run
+=============================
+
+Show bot options::
+
+  python icvbot.py --help
 
 
-channel = channel to join
-botnick = bot nickname
-password = bot password, optional
+Example bot usage::
 
-python run.py channel botnick [password]
+  python icvbot.py --server=irc.freenode.net --channel=#icv
 
 
+Plugins
+=============================
+
+plugins must be structured in this way::
+
+  #!/usr/bin/python
+  def main(*argv):
+      <<<code>>>
+      return string
+      or return string logstring
+      or return [string1,string2,...]
+      or return [string1,string2,...] logstring
 
 
-to do:
+TODO
+=============================
 
-add easy-enable/disable forum checker (only I have access to the database)
-redo plugin system so it's more useful
+ * add easy-enable/disable forum checker (only I have access to the database)
+ * redo plugin system so it's more useful
