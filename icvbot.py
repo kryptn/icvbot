@@ -248,16 +248,18 @@ class icvBotFactory(protocol.ClientFactory):
 """This next area parses cli and runs the bot!"""
 
 if __name__ == "__main__":
-	try:
-		chan = sys.argv[1]
-		nick = sys.argv[2]
-        	if not chan.startswith( '#' ): chan = '#' + chan
-	except IndexError:
-		sys.exit( "usage: python bot.py channel nickname <password>" )
-	try: passwd = sys.argv[3]
-	except IndexError:
-		passwd = None
-	reactor.connectTCP('irc.freenode.net', 6667, icvBotFactory(chan,nick,passwd))
-	reactor.run()
-	print rc
-	sys.exit(rc)
+    from optparse import OptionParser
+    p = OptionParser()
+    p.add_option('-s', '--server', dest='server')
+    p.add_option('-p', '--port', dest='port', default=6667)
+    p.add_option('-c', '--channel', dest='channel')
+    p.add_option('-n', '--nick', dest='nick', default='icvbot')
+    p.add_option('-P', '--password', dest='password', default=None)
+    o, args = p.parse_args()
+    
+    if not o.channel.startswith( '#' ): o.channel = '#' + o.channel
+
+    reactor.connectTCP( o.server, o.port, icvBotFactory( o.channel, o.nick, o.password ) )
+    reactor.run()
+    print rc
+    sys.exit( rc )
