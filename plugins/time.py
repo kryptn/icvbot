@@ -1,6 +1,5 @@
   #!/usr/bin/python
 import datetime
-import icvbot
 
 
 def getTime(offset=None):
