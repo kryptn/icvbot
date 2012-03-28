@@ -12,7 +12,6 @@ def roll( quant, dmax ):
 
 def main(l, args):
    try:
-      print args
       quant, dmax = args[0].split( 'd' )
       quant, dmax = int(quant), int(dmax)
    except( ValueError, IndexError ):
