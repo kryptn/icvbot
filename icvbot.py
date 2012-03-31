@@ -25,13 +25,14 @@ def cImport(name):
 	except ImportError: return None
 
 def log(*args):
-	"""logs to file and prints to console"""
-	s = ''.join(map(lambda x: str(x)+" ", args))
-	t = time.strftime("%Y %m %d %H %M %S ", time.gmtime())+s
-	f = open('botlog.txt', 'a')
-	f.write(t+"\n")
-	f.close()
-	print t
+    """logs to file and prints to console"""
+    s = ''.join(map(lambda x: str(x)+" ", args))
+    t = time.strftime("%Y %m %d %H %M %S ", time.gmtime())+s
+    f = open('botlog.txt', 'a')
+    f.write(t+"\n")
+    f.close()
+    if o.quiet: pass
+    else: print t
 
 class icvBot(irc.IRCClient):
 	def __init__(self):
@@ -95,7 +96,7 @@ class icvBot(irc.IRCClient):
 		if not msg:
 			msg = local['msg']
 		command, args = msg.split()[0], msg.split()[1:]
-		print locals()
+		#print locals()
 
 		mod = cImport(command)
 		if mod:
@@ -255,11 +256,13 @@ if __name__ == "__main__":
     p.add_option('-c', '--channel', dest='channel')
     p.add_option('-n', '--nick', dest='nick', default='icvbot')
     p.add_option('-P', '--password', dest='password', default=None)
+    p.add_option('-q', '--quiet', dest='quiet', action='store_true', default=False)
     o, args = p.parse_args()
     
     if not o.channel.startswith( '#' ): o.channel = '#' + o.channel
 
     reactor.connectTCP( o.server, o.port, icvBotFactory( o.channel, o.nick, o.password ) )
     reactor.run()
-    print rc
+    if o.quiet: pass
+    else: print rc
     sys.exit( rc )
