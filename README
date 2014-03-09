@@ -16,7 +16,7 @@ Show bot options::
 
 Example bot usage::
 
-  python icvbot.py --server=irc.freenode.net --channel=#icv
+  python icvbot.py --server=irc.freenode.net --channel=#icvbot
 
 
 Plugins
